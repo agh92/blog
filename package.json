@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/agh92/blog/issues"
   },
-  "homepage": "https://github.com/agh92/blog#readme"
+  "homepage": "https://github.com/agh92/blog#readme",
+  "dependencies": {
+    "@angular/cli": "^16.0.2"
+  }
 }
