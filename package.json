@@ -1,0 +1,19 @@
+{
+  "name": "blog",
+  "version": "1.0.0",
+  "description": "Personal web site",
+  "main": "index.js",
+  "scripts": {
+    "test": "ng test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/agh92/blog.git"
+  },
+  "author": "agh",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/agh92/blog/issues"
+  },
+  "homepage": "https://github.com/agh92/blog#readme"
+}
