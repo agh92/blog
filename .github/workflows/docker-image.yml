@@ -6,9 +6,6 @@ on:
   pull_request:
     branches: [ "main" ]
 
-env:
-  VERSION: $(date +%s)
-
 jobs:
 
   build:
@@ -16,16 +13,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout
+      uses: actions/checkout@v3
     - name: Set tag
       id: tag
       run: echo "tag=$(date +'%Y%m%d')_$(git rev-parse --short "$GITHUB_SHA")" >> $GITHUB_OUTPUT
+    - name: Login to GitHub Container registry
+      uses: docker/login-action@v1
+      env:
+        GITHUB_USER: ${{ github.actor }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        registry: ghcr.io
+        username: $GITHUB_USER
+        password: ${{ secrets.GITHUB_TOKEN }}
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag blog:$TAG_NAME
       env:
           TAG_NAME: ${{ steps.tag.outputs.tag }}
     - name: Push the Docker image
-      run: echo $GITHUB_TOKEN | docker login ghcr.io -u ${{ secrets.USER }} --password-stdin && docker push ghcr.io/agh92/blog:$TAG_NAME
+      run: docker push ghcr.io/$GITHUB_USER/blog:$TAG_NAME
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} |
         TAG_NAME: ${{ steps.tag.outputs.tag }}
+        GITHUB_USER: ${{ github.actor }}
