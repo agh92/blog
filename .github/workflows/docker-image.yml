@@ -18,6 +18,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag blog:$VERSION
-      run: docker login ghcr.io -u ${{ secrets.USER }} --password ${{ secrets.GITHUB_TOKEN }}
-      run: docker push ghcr.io/agh92/blog:$VERSION
+      run: 
+        - docker build . --file Dockerfile --tag blog:$VERSION
+        - docker login ghcr.io -u ${{ secrets.USER }} --password ${{ secrets.GITHUB_TOKEN }}
+        - docker push ghcr.io/agh92/blog:$VERSION
