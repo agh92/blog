@@ -13,6 +13,8 @@ jobs:
 
     permissions:
       packages: write
+      id-token: write # This is required for requesting the JWT
+      contents: read  # This is required for actions/checkout
 
     steps:
 
@@ -25,12 +27,10 @@ jobs:
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v2
-      env:
-        ACTIONS_ROLE: ${{ vars.ACTIONS_ROLE }}
-        AWS_REGION: ${{ vars.AWS_REGION }}
       with:
-        role-to-assume: $ACTIONS_ROLE
-        aws-region: $AWS_REGION
+        role-to-assume: ${{ vars.ACTIONS_ROLE }}
+        role-session-name: github-action-session
+        aws-region: ${{ vars.AWS_REGION }}
         mask-aws-account-id: 'false'
 
     - name: Login to Amazon ECR
