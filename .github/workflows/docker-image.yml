@@ -25,4 +25,7 @@ jobs:
       env:
           TAG_NAME: ${{ steps.tag.outputs.tag }}
     - name: Push the Docker image
-      run: docker login ghcr.io -u ${{ secrets.USER }} --password ${{ secrets.GITHUB_TOKEN }} && docker push ghcr.io/agh92/blog:$VERSION
+      run: echo $GITHUB_TOKEN | docker login ghcr.io -u ${{ secrets.USER }} --password-stdin && docker push ghcr.io/agh92/blog:$TAG_NAME
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} |
+        TAG_NAME: ${{ steps.tag.outputs.tag }}
