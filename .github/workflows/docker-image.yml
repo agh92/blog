@@ -27,12 +27,11 @@ jobs:
         registry: ghcr.io
         username: $GITHUB_USER
         password: ${{ secrets.GITHUB_TOKEN }}
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag blog:$TAG_NAME
-      env:
-          TAG_NAME: ${{ steps.tag.outputs.tag }}
-    - name: Push the Docker image
-      run: docker push ghcr.io/$GITHUB_USER/blog:$TAG_NAME
-      env:
-        TAG_NAME: ${{ steps.tag.outputs.tag }}
-        GITHUB_USER: ${{ github.actor }}
+    - name: Build and Push the Docker image
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        push: true
+        tags: ${{ github.actor }}/blog:${{ steps.tag.outputs.tag }}
+        secrets: |
+          GIT_AUTH_TOKEN=${{ secrets.GITHUB_TOKEN }}
