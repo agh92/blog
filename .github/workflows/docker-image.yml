@@ -6,10 +6,9 @@ on:
   pull_request:
     branches: [ "main" ]
 
-environment: prod
-
 jobs:
   build:
+    environment: prod
     runs-on: ubuntu-latest
 
     permissions:
