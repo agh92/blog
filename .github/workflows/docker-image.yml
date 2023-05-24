@@ -17,7 +17,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - name: Set tag
+      id: tag
+      run: echo "::set-output name=tag::$(date +'%Y%m%d')_$(git rev-parse --short "$GITHUB_SHA")"
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag blog:$VERSION
+      run: docker build . --file Dockerfile --tag blog:$TAG_NAME
+      env:
+          TAG_NAME: ${{ steps.tag.outputs.tag }}
     - name: Push the Docker image
       run: docker login ghcr.io -u ${{ secrets.USER }} --password ${{ secrets.GITHUB_TOKEN }} && docker push ghcr.io/agh92/blog:$VERSION
