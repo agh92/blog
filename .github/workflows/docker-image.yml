@@ -9,23 +9,38 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     permissions:
       packages: write
+
     steps:
+
     - name: Checkout
       uses: actions/checkout@v3
+
     - name: Set tag
       id: tag
       run: echo "tag=$(date +'%Y%m%d')_$(git rev-parse --short "$GITHUB_SHA")" >> $GITHUB_OUTPUT
-    - name: Login to GitHub Container registry
-      uses: docker/login-action@v2
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      env:
+        ACTIONS_ROLE: ${{ vars.ACTIONS_ROLE }}
+        AWS_REGION: ${{ vars.AWS_REGION }}
       with:
-        registry: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-    - name: Build and Push the Docker image
-      uses: docker/build-push-action@v4
-      with:
-        context: .
-        push: true
-        tags: ghcr.io/${{ github.actor }}/blog:${{ steps.tag.outputs.tag }}
+        role-to-assume: $ACTIONS_ROLE
+        aws-region: $AWS_REGION
+        mask-aws-account-id: 'false'
+
+    - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Build, tag, and push docker image to Amazon ECR
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        REPOSITORY: blog
+        IMAGE_TAG: ${{ steps.tag.outputs.tag }}
+      run: |
+        docker build -t $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG .
+        docker push $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG
