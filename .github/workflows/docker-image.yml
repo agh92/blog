@@ -28,4 +28,4 @@ jobs:
       with:
         context: .
         push: true
-        tags: ${{ github.actor }}/blog:${{ steps.tag.outputs.tag }}
+        tags: ghcr.io/${{ github.actor }}/blog:${{ steps.tag.outputs.tag }}

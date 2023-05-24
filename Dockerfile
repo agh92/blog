@@ -11,6 +11,8 @@ COPY ./server/package*.json ./
 RUN npm install
 COPY ./server/index.js .
 
+LABEL org.opencontainers.image.source="https://github.com/agh92/blog"
+
 EXPOSE 3080
 
 CMD ["node", "index.js"]
