@@ -29,45 +29,27 @@ resource "aws_ecr_repository" "this" {
 resource "aws_iam_openid_connect_provider" "this" {
   url = "https://token.actions.githubusercontent.com"
 
-  client_id_list = ["sts.amazonaws.com"]
+  client_id_list = [
+    "https://github.com/agh92/blog",
+    "sts.amazonaws.com"
+    ]
 
-  thumbprint_list = ["6938fd4d98bab03faadb97b34396831e3780aea1"]
+  thumbprint_list = [data.tls_certificate.github.certificates[0].sha1_fingerprint]
 }
 
 # create role for the github action
-
-data "aws_iam_policy_document" "this" {
-  statement {
-    actions = [ "sts:AssumeRoleWithWebIdentity" ]
-    effect = "Allow"
-
-    principals {
-      type        = "Federated"
-      identifiers = [aws_iam_openid_connect_provider.this.arn]
-    }
-
-    condition {
-      test     = "StringLike"
-      variable = "token.actions.githubusercontent.com:sub"
-      values = [ "repo:agh92/${aws_ecr_repository.this.name}:*" ] 
-    }
-
-    condition {
-      test = "StringEquals"
-      variable = "token.actions.githubusercontent.com:aud"
-      values = [ "sts.amazonaws.com" ]
-    }
-
-    condition {
-      test = "StringEquals"
-      variable = "token.actions.githubusercontent.com:iss"
-      values = [ "https://token.actions.githubusercontent.com" ]
-    }
-  }
-}
-
 resource "aws_iam_role" "this" {
   name = "github-actions-role"
+  path = "/"
+  assume_role_policy = data.aws_iam_policy_document.this.json  
+}
 
-  assume_role_policy = data.aws_iam_policy_document.this.json
+resource "aws_iam_role_policy_attachment" "AmazonEC2ContainerRegistryPowerUser" {
+  role       = aws_iam_role.this.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser"
+}
+
+resource "aws_iam_role_policy_attachment" "AmazonElasticContainerRegistryPublicPowerUser" {
+  role       = aws_iam_role.this.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonElasticContainerRegistryPublicPowerUser"
 }
