@@ -11,7 +11,7 @@ data "aws_iam_policy_document" "this" {
     condition {
       test     = "StringLike"
       variable = "token.actions.githubusercontent.com:sub"
-      values = [ "repo:agh92/${aws_ecr_repository.this.name}:*" ] 
+      values = [ "repo:agh92/blog:*" ] 
     }
 
     condition {
