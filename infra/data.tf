@@ -15,25 +15,19 @@ data "aws_iam_policy_document" "this" {
     }
 
     condition {
-      test = "StringLike"
-      variable = "token.actions.githubusercontent.com:aud"
-      values = [ "https://github.com/agh92" ]
-    }
-
-    condition {
       test = "StringEquals"
       variable = "token.actions.githubusercontent.com:aud"
-      values = [ "sts.amazonaws.com" ]
+      values = [ var.github_aud ]
     }
 
     condition {
       test = "StringEquals"
       variable = "token.actions.githubusercontent.com:iss"
-      values = [ "https://token.actions.githubusercontent.com" ]
+      values = [ var.oidc_url ]
     }
   }
 }
 
 data "tls_certificate" "github" {
-  url = "https://token.actions.githubusercontent.com/.well-known/openid-configuration"
+  url = "${var.oidc_url}/.well-known/openid-configuration"
 }

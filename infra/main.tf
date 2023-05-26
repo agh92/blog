@@ -27,13 +27,9 @@ resource "aws_ecr_repository" "this" {
 
 # create OIDC for github
 resource "aws_iam_openid_connect_provider" "this" {
-  url = "https://token.actions.githubusercontent.com"
+  url = var.oidc_url
 
-  client_id_list = [
-    "https://github.com/agh92",
-    "https://github.com/agh92/blog",
-    "sts.amazonaws.com"
-    ]
+  client_id_list = [var.github_aud]
 
   thumbprint_list = [data.tls_certificate.github.certificates[0].sha1_fingerprint]
 }
