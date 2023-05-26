@@ -30,6 +30,7 @@ resource "aws_iam_openid_connect_provider" "this" {
   url = "https://token.actions.githubusercontent.com"
 
   client_id_list = [
+    "https://github.com/agh92",
     "https://github.com/agh92/blog",
     "sts.amazonaws.com"
     ]
